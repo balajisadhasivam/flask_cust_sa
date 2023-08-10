@@ -5,4 +5,4 @@ flask
 scikit-learn
 scipy
 spacy
-gunicorn
+gunicorn==19.8.0
