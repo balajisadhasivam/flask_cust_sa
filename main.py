@@ -1,17 +1,17 @@
 from flask import Flask, request, render_template, jsonify
 import pickle
 from text_cleaning import text_data_cleaning
-appliction = Flask(__name__)
+app = Flask(__name__)
 
 with open('cust_review_senti.pkl', 'rb') as file:
     clf, loaded_text_data_cleaning = pickle.load(file)
 
 
-@appliction.route('/', methods=['GET'])
+@app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
 
-@appliction.route('/analyze_sentiment', methods=['POST'])
+@app.route('/analyze_sentiment', methods=['POST'])
 def analyze_sentiment():
     try:
     #request_data = request.get_json()
@@ -33,4 +33,4 @@ def analyze_sentiment():
         return jsonify(error_response), 500
 
 if __name__ == "__main__":
-    appliction.run(debug=True)
+    app.run(debug=True)
