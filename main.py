@@ -14,23 +14,26 @@ def index():
 @app.route('/analyze_sentiment', methods=['POST'])
 def analyze_sentiment():
     try:
-    #request_data = request.get_json()
-        #review = request_data.get('review')
-        review = request.form['review']
+        review = request.form['review']  # Extract review from the form data
         cleaned_review = text_data_cleaning(review)
         sentiment = clf.predict([" ".join(cleaned_review)])[0]  # Predict sentiment for the cleaned review
+
         # Convert sentiment to a string before including it in the response
         sentiment_str = "Positive" if sentiment == 1 else "Negative"
+
         response = {
             "review": review,
             "sentiment": sentiment_str
         }
 
+        # Create a JSON response using the jsonify function
         return jsonify(response)
 
     except Exception as e:
+        # Handle errors and return an error response
         error_response = {"error": str(e)}
         return jsonify(error_response), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)

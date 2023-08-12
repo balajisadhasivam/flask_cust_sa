@@ -1,9 +1,7 @@
-# 1) Importing the datasets
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import pickle
-
 import spacy
 nlp = spacy.load('en_core_web_sm')
 
@@ -11,8 +9,13 @@ nlp = spacy.load('en_core_web_sm')
 columan_name = ['Reviews', 'Sentiment']
 
 df = pd.read_csv('dataset\imdb_labelled.txt',sep='\t',header=None)
+df.head()
+
 df.columns = columan_name
 
+df.head()
+
+df.shape
 
 # check distribution of sentiments
 
@@ -41,14 +44,17 @@ df['Uppercase Char Count'] = [sum(char.isupper() for char in review) \
 df['Special Char Count'] = [sum(char in string.punctuation for char in review) \
                             for review in df['Reviews']]
 
-# Removing Punctuations
+df.head()
+
 punct = string.punctuation
+
+punct
 
 from spacy.lang.en.stop_words import STOP_WORDS
 
 stopwords = list(STOP_WORDS) # list of stopwords
 
-# Creating a function for data cleaning
+"""## Creating a function for data cleaning"""
 
 def text_data_cleaning(sentence):
   doc = nlp(sentence)
@@ -73,7 +79,7 @@ def text_data_cleaning(sentence):
 text_data_cleaning("Hello all, It's a beautiful day outside there!")
 # stopwords and punctuations removed
 
-# Vectorization Feature Engineering (TF-IDF)
+## Vectorization Feature Engineering (TF-IDF)
 
 from sklearn.svm import LinearSVC
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -86,16 +92,22 @@ classifier = LinearSVC()
 
 # 3) Train the model
 
-# Splitting the dataset into the Train and Test set
+## Splitting the dataset into the Train and Test set
+
+
 from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = 0)
 
 x_train.shape, x_test.shape
+# 2198 samples in training dataset and 550 in test dataset
 
+x_train.head()
 
-# Fit the x_train and y_train
+## Fit the x_train and y_train
+
 clf = Pipeline([('tfidf',tfidf), ('clf',classifier)])
 # it will first do vectorization and then it will do classification
+
 clf.fit(x_train, y_train)
 
 # save the model in pickle file
@@ -107,6 +119,7 @@ with open('cust_review_senti.pkl', 'wb') as file:
 # 4) Predict the Test set results
 
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
 y_pred = clf.predict(x_test)
 
 # confusion_matrix
@@ -114,11 +127,11 @@ confusion_matrix(y_test, y_pred)
 
 # classification_report
 print(classification_report(y_test, y_pred))
-# we are getting almost 77% accuracy
+
 
 accuracy_score(y_test, y_pred)
 
-clf.predict(["I love this movie!"])
+clf.predict(["While informative, the film struggled to capture the excitement of scientific discovery."])
 
-clf.predict(["I hate this movie!"])
+clf.predict(["Blue Beetle's potential was not fully realized, resulting in a less-than-thrilling adventure."])
 
